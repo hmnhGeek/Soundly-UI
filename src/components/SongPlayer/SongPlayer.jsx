@@ -168,65 +168,39 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
       sx={{
         padding: 2,
         borderRadius: 3,
-        width: isMinimized ? 300 : 500,
+        width: 500,
         height: 640,
       }}
+      style={{ float: "right" }}
     >
-      {isMinimized ? (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <img
-            src={coverImage}
-            alt="Cover"
-            width={50}
-            height={50}
-            style={{ borderRadius: 4 }}
-          />
-          <Typography variant="subtitle1" sx={{ flexGrow: 1, mx: 2 }}>
-            {song?.originalName}
-          </Typography>
+      <Box>
+        <img
+          src={coverImage}
+          alt="Cover"
+          width="100%"
+          height="auto"
+          style={{ borderRadius: 8 }}
+        />
+        <Typography variant="h6" sx={{ my: 3 }} align="center">
+          {song?.originalName}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <IconButton onClick={togglePlayPause} color="primary">
             {isPlaying ? <Pause /> : <PlayArrow />}
           </IconButton>
-          <IconButton onClick={() => setIsMinimized(false)} color="secondary">
-            <Minimize />
-          </IconButton>
-        </Box>
-      ) : (
-        <Box>
-          <img
-            src={coverImage}
-            alt="Cover"
-            width="100%"
-            height="auto"
-            style={{ borderRadius: 8 }}
+          <Typography variant="body2">{formatTime(currentTime)}</Typography>
+          <Slider
+            value={progress}
+            onChange={(e, newValue) => {
+              const newTime = (newValue / 100) * audioRef.current.duration;
+              audioRef.current.currentTime = newTime;
+              setProgress(newValue);
+            }}
+            sx={{ mx: 2, flexGrow: 1 }}
           />
-          <Typography variant="h6" sx={{ my: 3 }} align="center">
-            {song?.originalName}
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton onClick={togglePlayPause} color="primary">
-              {isPlaying ? <Pause /> : <PlayArrow />}
-            </IconButton>
-            <Typography variant="body2">{formatTime(currentTime)}</Typography>
-            <Slider
-              value={progress}
-              onChange={(e, newValue) => {
-                const newTime = (newValue / 100) * audioRef.current.duration;
-                audioRef.current.currentTime = newTime;
-                setProgress(newValue);
-              }}
-              sx={{ mx: 2, flexGrow: 1 }}
-            />
-            <Typography variant="body2">{formatTime(duration)}</Typography>
-          </Box>
+          <Typography variant="body2">{formatTime(duration)}</Typography>
         </Box>
-      )}
+      </Box>
 
       {/* Component UI remains unchanged */}
       <audio
