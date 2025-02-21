@@ -16,6 +16,26 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
 
+  useEffect(() => {
+    if (audioRef.current && audioSrc) {
+      if (isPlaying) {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log("Playback started.");
+            })
+            .catch((error) => {
+              setError("Could not autoplay the song. Please try manually.");
+              console.error(error);
+            });
+        }
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [audioSrc, isPlaying]);
+
   const authHeader = useMemo(() => {
     console.log(username, password);
     return {
@@ -113,12 +133,27 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
 
   const togglePlayPause = () => {
     if (isPlaying) {
-      setProgress(
-        (audioRef.current.currentTime / audioRef.current.duration) * 100
-      );
+      // Save the current position before pausing
+      const currentTime = audioRef.current.currentTime;
+      setProgress((currentTime / audioRef.current.duration) * 100);
     }
     setIsPlaying((prev) => !prev);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayPause();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [togglePlayPause]);
 
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return "0:00";
@@ -130,7 +165,12 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
   return (
     <Paper
       elevation={6}
-      sx={{ padding: 2, borderRadius: 3, width: isMinimized ? 300 : 500 }}
+      sx={{
+        padding: 2,
+        borderRadius: 3,
+        width: isMinimized ? 300 : 500,
+        height: 640,
+      }}
     >
       {isMinimized ? (
         <Box
@@ -166,13 +206,14 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
             height="auto"
             style={{ borderRadius: 8 }}
           />
-          <Typography variant="h6" sx={{ my: 1 }}>
+          <Typography variant="h6" sx={{ my: 3 }} align="center">
             {song?.originalName}
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton onClick={togglePlayPause} color="primary">
               {isPlaying ? <Pause /> : <PlayArrow />}
             </IconButton>
+            <Typography variant="body2">{formatTime(currentTime)}</Typography>
             <Slider
               value={progress}
               onChange={(e, newValue) => {
@@ -182,9 +223,7 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
               }}
               sx={{ mx: 2, flexGrow: 1 }}
             />
-            <Typography variant="body2">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </Typography>
+            <Typography variant="body2">{formatTime(duration)}</Typography>
           </Box>
         </Box>
       )}
