@@ -106,7 +106,11 @@ const Home = () => {
       {/* Right side: Song Player (only visible when a song is selected) */}
       {currentSong && (
         <Box sx={{ flex: 1, width: "50%" }}>
-          <SongPlayer song={currentSong} isPlaying={isPlaying} />
+          <SongPlayer
+            song={currentSong}
+            setSong={setCurrentSong}
+            isPlaying={isPlaying}
+          />
         </Box>
       )}
     </Box>

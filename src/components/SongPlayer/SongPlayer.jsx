@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useContext, useMemo } from "react";
 import { Box, IconButton, Slider, Typography, Paper } from "@mui/material";
-import { PlayArrow, Pause, Minimize } from "@mui/icons-material";
+import { PlayArrow, Pause, Close } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
 
-const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
+const SongPlayer = ({ song, setSong }) => {
   const { auth } = useContext(AuthContext);
   const username = auth?.username;
   const password = auth?.password;
@@ -21,14 +21,9 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
       if (isPlaying) {
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log("Playback started.");
-            })
-            .catch((error) => {
-              setError("Could not autoplay the song. Please try manually.");
-              console.error(error);
-            });
+          playPromise.catch(() => {
+            setError("Could not autoplay the song. Please try manually.");
+          });
         }
       } else {
         audioRef.current.pause();
@@ -36,15 +31,13 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
     }
   }, [audioSrc, isPlaying]);
 
-  const authHeader = useMemo(() => {
-    console.log(username, password);
-    return {
-      headers: {
-        Authorization: `Basic ${btoa(username + ":" + password)}`,
-      },
+  const authHeader = useMemo(
+    () => ({
+      headers: { Authorization: `Basic ${btoa(username + ":" + password)}` },
       withCredentials: true,
-    };
-  }, [username, password]);
+    }),
+    [username, password]
+  );
 
   useEffect(() => {
     if (!song) return;
@@ -58,26 +51,15 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
           setIsPlaying(false);
           setProgress(0);
         }
-
         const response = await fetch(
           `http://localhost:8080/api/songs/get-song/${song.id}`,
           authHeader
         );
-
-        console.log("Song Response Status:", response.status);
-        console.log("Song Response Headers:", response.headers);
-
         if (!response.ok) throw new Error("Failed to fetch song");
-
         const blob = await response.blob();
-        console.log("Song Blob Size:", blob.size);
-        console.log("Song Blob Type:", blob.type);
-
-        const url = URL.createObjectURL(blob);
-        setAudioSrc(url);
+        setAudioSrc(URL.createObjectURL(blob));
       } catch (err) {
         setError("Could not load the song. Please try again.");
-        console.error(err);
       }
     };
 
@@ -87,17 +69,8 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
           `http://localhost:8080/api/songs/get-song-cover-image/${song.id}`,
           authHeader
         );
-
         if (!coverResponse.ok) throw new Error("Failed to fetch cover image");
-
-        const blob = await coverResponse.blob();
-        // const mimeType = blob.type || "image/*"; // Default to "image/jpeg" if type is missing
-
-        // if (!mimeType.startsWith("image/")) {
-        //   throw new Error("Invalid image file received");
-        // }
-        console.log("imagebhai", URL.createObjectURL(blob));
-        setCoverImage(URL.createObjectURL(blob));
+        setCoverImage(URL.createObjectURL(await coverResponse.blob()));
       } catch (err) {
         console.error("Could not load the cover image.");
       }
@@ -170,9 +143,18 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
         borderRadius: 3,
         width: 500,
         height: 640,
+        position: "relative",
+        float: "right",
       }}
-      style={{ float: "right" }}
     >
+      {/* Close Button */}
+      <IconButton
+        onClick={() => setSong(null)}
+        sx={{ position: "relative", float: "right", top: 0, right: 0 }}
+      >
+        <Close />
+      </IconButton>
+
       <Box>
         <img
           src={coverImage}
@@ -181,8 +163,10 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
           height="auto"
           style={{ borderRadius: 8 }}
         />
-        <Typography variant="h6" sx={{ my: 3 }} align="center">
-          {song?.originalName}
+        <Typography variant="h6" sx={{ my: 1 }} align="center">
+          {song?.originalName.length > 15
+            ? `${song.originalName.substring(0, 45)}...`
+            : song?.originalName}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <IconButton onClick={togglePlayPause} color="primary">
@@ -201,13 +185,10 @@ const SongPlayer = ({ song, isMinimized, setIsMinimized, onSongEnd }) => {
           <Typography variant="body2">{formatTime(duration)}</Typography>
         </Box>
       </Box>
-
-      {/* Component UI remains unchanged */}
       <audio
         ref={audioRef}
         src={audioSrc}
         onTimeUpdate={handleTimeUpdate}
-        // onEnded={onSongEnd}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
       />
