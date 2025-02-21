@@ -12,16 +12,30 @@ import {
   Box,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
 
 const Home = () => {
   const { songs } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentSong, setCurrentSong] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
     song.originalName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Handle Play/Pause
+  const handlePlayPause = (song) => {
+    if (currentSong?.id === song.id) {
+      setIsPlaying(!isPlaying); // Toggle play/pause
+    } else {
+      setCurrentSong(song);
+      setIsPlaying(true); // Play new song
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 1200, margin: "auto", mt: 5 }}>
@@ -63,9 +77,13 @@ const Home = () => {
                 <TableCell>
                   <IconButton
                     color="primary"
-                    onClick={() => console.log(`Playing ${song.originalName}`)}
+                    onClick={() => handlePlayPause(song)}
                   >
-                    <PlayArrowIcon />
+                    {currentSong?.id === song.id && isPlaying ? (
+                      <PauseIcon />
+                    ) : (
+                      <PlayArrowIcon />
+                    )}
                   </IconButton>
                 </TableCell>
                 <TableCell>{song.originalName}</TableCell>
@@ -74,6 +92,9 @@ const Home = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Song Player */}
+      {currentSong && <SongPlayer song={currentSong} isPlaying={isPlaying} />}
     </Box>
   );
 };
