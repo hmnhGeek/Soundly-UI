@@ -8,8 +8,8 @@ import Header from "./components/Header/Header";
 const App = () => {
   return (
     <AuthProvider>
-      <Header />
       <Router>
+        <Header />
         <Routes>
           <Route path="/" element={<LoginForm />} />
           <Route path="/home" element={<Home />} />
