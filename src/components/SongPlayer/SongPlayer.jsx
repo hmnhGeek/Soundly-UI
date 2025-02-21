@@ -156,6 +156,11 @@ const SongPlayer = ({ song, setSong }) => {
       </IconButton>
 
       <Box>
+        <Typography variant="h6" sx={{ my: 2 }} align="center">
+          {song?.originalName.length > 35
+            ? `${song.originalName.substring(0, 35)}...`
+            : song?.originalName}
+        </Typography>
         <img
           src={coverImage}
           alt="Cover"
@@ -163,12 +168,8 @@ const SongPlayer = ({ song, setSong }) => {
           height="auto"
           style={{ borderRadius: 8 }}
         />
-        <Typography variant="h6" sx={{ my: 1 }} align="center">
-          {song?.originalName.length > 15
-            ? `${song.originalName.substring(0, 45)}...`
-            : song?.originalName}
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+
+        <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
           <IconButton onClick={togglePlayPause} color="primary">
             {isPlaying ? <Pause /> : <PlayArrow />}
           </IconButton>
