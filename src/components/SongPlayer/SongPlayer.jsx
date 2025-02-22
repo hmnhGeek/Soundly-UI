@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, useContext, useMemo } from "react";
-import { Box, IconButton, Slider, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Slider,
+  Typography,
+  Skeleton,
+  Paper,
+} from "@mui/material";
 import { PlayArrow, Pause, Close } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
 
@@ -161,13 +168,23 @@ const SongPlayer = ({ song, setSong }) => {
             ? `${song.originalName.substring(0, 35)}...`
             : song?.originalName}
         </Typography>
-        <img
-          src={coverImage}
-          alt="Cover"
-          width="100%"
-          height="auto"
-          style={{ borderRadius: 8 }}
-        />
+        {/* Cover Image with Placeholder */}
+        {coverImage ? (
+          <img
+            src={coverImage}
+            alt="Cover"
+            width="100%"
+            height="auto"
+            style={{ borderRadius: 8 }}
+          />
+        ) : (
+          <Skeleton
+            variant="square"
+            width="100%"
+            height={500}
+            sx={{ borderRadius: 8 }}
+          />
+        )}
 
         <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
           <IconButton onClick={togglePlayPause} color="primary">
