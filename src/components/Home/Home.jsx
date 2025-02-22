@@ -15,12 +15,18 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
+import { Delete } from "@mui/icons-material";
+import DeleteMusicDialog from "./DeleteMusicDialog";
 
 const Home = () => {
   const { songs } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [deleteDialogState, setDeleteDialogState] = useState({
+    show: false,
+    song: null,
+  });
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
@@ -42,6 +48,10 @@ const Home = () => {
    */
   const playNextMusic = () => {
     setCurrentSong(songs[Math.floor(Math.random() * songs.length)]);
+  };
+
+  const initiateDelete = (song) => {
+    setDeleteDialogState({ show: true, song });
   };
 
   return (
@@ -85,6 +95,9 @@ const Home = () => {
                 <TableCell>
                   <strong>Song</strong>
                 </TableCell>
+                <TableCell>
+                  <strong>Delete</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -103,6 +116,14 @@ const Home = () => {
                     </IconButton>
                   </TableCell>
                   <TableCell>{song.originalName}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="warning"
+                      onClick={() => initiateDelete(song)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -121,6 +142,11 @@ const Home = () => {
           />
         </Box>
       )}
+
+      <DeleteMusicDialog
+        state={deleteDialogState}
+        setter={setDeleteDialogState}
+      />
     </Box>
   );
 };
