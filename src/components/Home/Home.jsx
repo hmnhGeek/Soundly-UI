@@ -37,6 +37,13 @@ const Home = () => {
     }
   };
 
+  /**
+   * Pick a random song to be played next.
+   */
+  const playNextMusic = () => {
+    setCurrentSong(songs[Math.floor(Math.random() * songs.length)]);
+  };
+
   return (
     <Box
       sx={{
@@ -110,6 +117,7 @@ const Home = () => {
             song={currentSong}
             setSong={setCurrentSong}
             isPlaying={isPlaying}
+            onMusicEnd={playNextMusic}
           />
         </Box>
       )}

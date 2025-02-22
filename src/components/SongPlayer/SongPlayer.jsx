@@ -10,7 +10,7 @@ import {
 import { PlayArrow, Pause, Close } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
 
-const SongPlayer = ({ song, setSong }) => {
+const SongPlayer = ({ song, setSong, onMusicEnd }) => {
   const { auth } = useContext(AuthContext);
   const username = auth?.username;
   const password = auth?.password;
@@ -209,6 +209,7 @@ const SongPlayer = ({ song, setSong }) => {
         onTimeUpdate={handleTimeUpdate}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onEnded={onMusicEnd}
       />
     </Paper>
   );
