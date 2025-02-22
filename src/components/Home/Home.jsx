@@ -17,6 +17,8 @@ import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
 import { Delete } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
+import Image from "@mui/icons-material/Image";
+import EditCoverImageModal from "./EditCoverImageModal";
 
 const Home = () => {
   const { songs } = useContext(AuthContext);
@@ -26,6 +28,10 @@ const Home = () => {
   const [deleteDialogState, setDeleteDialogState] = useState({
     show: false,
     song: null,
+  });
+  const [coverImageModalState, setCoverImageModalState] = useState({
+    show: false,
+    songId: null,
   });
 
   // Filter songs based on search term (case-insensitive)
@@ -52,6 +58,10 @@ const Home = () => {
 
   const initiateDelete = (song) => {
     setDeleteDialogState({ show: true, song });
+  };
+
+  const initiateCoverImageChange = (id) => {
+    setCoverImageModalState({ show: true, songId: id });
   };
 
   return (
@@ -96,6 +106,9 @@ const Home = () => {
                   <strong>Song</strong>
                 </TableCell>
                 <TableCell>
+                  <strong>Change Cover</strong>
+                </TableCell>
+                <TableCell>
                   <strong>Delete</strong>
                 </TableCell>
               </TableRow>
@@ -116,6 +129,14 @@ const Home = () => {
                     </IconButton>
                   </TableCell>
                   <TableCell>{song.originalName}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => initiateCoverImageChange(song.id)}
+                    >
+                      <Image />
+                    </IconButton>
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       color="warning"
@@ -146,6 +167,12 @@ const Home = () => {
       <DeleteMusicDialog
         state={deleteDialogState}
         setter={setDeleteDialogState}
+      />
+
+      <EditCoverImageModal
+        songId={coverImageModalState.songId}
+        isVisible={coverImageModalState.show}
+        onClose={() => setCoverImageModalState({ show: false, songId: null })}
       />
     </Box>
   );
