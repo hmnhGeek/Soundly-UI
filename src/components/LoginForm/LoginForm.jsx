@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   TextField,
   Button,
@@ -6,9 +6,10 @@ import {
   Typography,
   Paper,
   Box,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import axios from "axios";
-import { useContext } from "react";
 import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +19,7 @@ const LoginForm = () => {
     password: "",
   });
 
+  const [error, setError] = useState(false); // State for error snackbar
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -42,16 +44,21 @@ const LoginForm = () => {
       })
       .then((response) => {
         console.log("Login successful:", response.data);
-        login(credentials.username, credentials.password, response.data); // Store credentials in context
+        login(credentials.username, credentials.password, response.data);
         navigate("/home");
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
           console.error("Login failed: Invalid credentials");
+          setError(true); // Show Snackbar on 401 error
         } else {
           console.error("Request error:", error);
         }
       });
+  };
+
+  const handleClose = () => {
+    setError(false); // Close Snackbar
   };
 
   return (
@@ -61,7 +68,6 @@ const LoginForm = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // backgroundColor: "#f4f4f4",
       }}
     >
       <Container maxWidth="xs">
@@ -71,7 +77,6 @@ const LoginForm = () => {
           </Typography>
           <Box
             component="form"
-            // onSubmit={handleSubmit}
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <TextField
@@ -102,6 +107,13 @@ const LoginForm = () => {
           </Box>
         </Paper>
       </Container>
+
+      {/* Snackbar for error message */}
+      <Snackbar open={error} autoHideDuration={3000} onClose={handleClose}>
+        <Alert severity="error" onClose={handleClose}>
+          Invalid username or password. Please try again.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
