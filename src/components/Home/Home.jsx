@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -19,9 +19,10 @@ import { Delete } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
 import Image from "@mui/icons-material/Image";
 import EditCoverImageModal from "./EditCoverImageModal";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const { songs } = useContext(AuthContext);
+  const { songs, auth } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSong, setCurrentSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -33,6 +34,13 @@ const Home = () => {
     show: false,
     songId: null,
   });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth?.username === undefined) {
+      navigate("/");
+    }
+  }, []);
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
@@ -99,9 +107,7 @@ const Home = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>
-                  <strong>Play</strong>
-                </TableCell>
+                <TableCell></TableCell>
                 <TableCell>
                   <strong>Song</strong>
                 </TableCell>
