@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -18,8 +18,38 @@ import UploadMusicModal from "./UploadMusicModal";
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [show, setShow] = useState(false);
-  const { logout, auth } = useContext(AuthContext);
+  const { logout, auth, setProfileImage, userProfileImage } =
+    useContext(AuthContext);
   const navigate = useNavigate();
+
+  const authHeader = useMemo(
+    () => ({
+      headers: {
+        Authorization: `Basic ${btoa(auth?.username + ":" + auth?.password)}`,
+      },
+      withCredentials: true,
+    }),
+    [auth?.username, auth?.password]
+  );
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const coverResponse = await fetch(
+          `http://localhost:8080/api/users/profile-image`,
+          authHeader
+        );
+        if (!coverResponse.ok) throw new Error("Failed to fetch profile image");
+        setProfileImage(URL.createObjectURL(await coverResponse.blob()));
+      } catch (err) {
+        console.error("Could not load the profile image.");
+      }
+    };
+
+    if (auth?.username) {
+      fetchProfileImage();
+    }
+  }, [auth]);
 
   const handleMouseEnter = (event) => {
     setAnchorEl(event.currentTarget);
@@ -47,7 +77,17 @@ const Header = () => {
               color="inherit"
               onMouseEnter={handleMouseEnter} // Open menu on hover
             >
-              <AccountCircle />
+              {userProfileImage ? (
+                <img
+                  src={userProfileImage}
+                  alt="Profile"
+                  width="40"
+                  height="40"
+                  style={{ borderRadius: "100%" }}
+                />
+              ) : (
+                <AccountCircle fontSize="large" />
+              )}
             </IconButton>
             <Menu
               anchorEl={anchorEl}
