@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Box,
+  Avatar,
 } from "@mui/material";
 import { AccountCircle, CloudUpload, Logout } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
@@ -78,13 +79,14 @@ const Header = () => {
               onMouseEnter={handleMouseEnter} // Open menu on hover
             >
               {userProfileImage ? (
-                <img
-                  src={userProfileImage}
-                  alt="Profile"
-                  width="40"
-                  height="40"
-                  style={{ borderRadius: "100%" }}
-                />
+                // <img
+                //   src={userProfileImage}
+                //   alt="Profile"
+                //   width="40"
+                //   height="40"
+                //   style={{ borderRadius: "100%" }}
+                // />
+                <Avatar alt="Profile" src={userProfileImage} />
               ) : (
                 <AccountCircle fontSize="large" />
               )}
