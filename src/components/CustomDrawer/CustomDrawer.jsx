@@ -14,7 +14,7 @@ import { Avatar, Typography } from "@mui/material";
 import { AccountCircle, Favorite } from "@mui/icons-material";
 
 export default function CustomDrawer({ open, toggleDrawer }) {
-  const { userProfileImage } = useContext(AuthContext);
+  const { userProfileImage, userFullName } = useContext(AuthContext);
 
   const list = (
     <Box
@@ -36,7 +36,7 @@ export default function CustomDrawer({ open, toggleDrawer }) {
           <AccountCircle fontSize="large" />
         )}
         <Typography align="center" mt={2} variant="h4">
-          Himanshu Sharma
+          {userFullName}
         </Typography>
       </List>
       <Divider />
