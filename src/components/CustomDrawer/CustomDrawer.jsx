@@ -11,7 +11,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { AuthContext } from "../../AuthContext";
 import { Avatar, Typography } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, Favorite } from "@mui/icons-material";
 
 export default function CustomDrawer({ open, toggleDrawer }) {
   const { userProfileImage } = useContext(AuthContext);
@@ -41,16 +41,14 @@ export default function CustomDrawer({ open, toggleDrawer }) {
       </List>
       <Divider />
       <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <ListItem key={"Favourites"} disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <Favorite />
+            </ListItemIcon>
+            <ListItemText primary={"Favourites"} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );
