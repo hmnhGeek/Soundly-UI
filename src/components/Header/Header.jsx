@@ -23,35 +23,6 @@ const Header = () => {
     useContext(AuthContext);
   const navigate = useNavigate();
 
-  const authHeader = useMemo(
-    () => ({
-      headers: {
-        Authorization: `Basic ${btoa(auth?.username + ":" + auth?.password)}`,
-      },
-      withCredentials: true,
-    }),
-    [auth?.username, auth?.password]
-  );
-
-  useEffect(() => {
-    const fetchProfileImage = async () => {
-      try {
-        const coverResponse = await fetch(
-          `http://localhost:8080/api/users/profile-image`,
-          authHeader
-        );
-        if (!coverResponse.ok) throw new Error("Failed to fetch profile image");
-        setProfileImage(URL.createObjectURL(await coverResponse.blob()));
-      } catch (err) {
-        console.error("Could not load the profile image.");
-      }
-    };
-
-    if (auth?.username) {
-      fetchProfileImage();
-    }
-  }, [auth]);
-
   const handleMouseEnter = (event) => {
     setAnchorEl(event.currentTarget);
   };
