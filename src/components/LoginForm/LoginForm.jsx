@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import {
   TextField,
   Button,
@@ -20,8 +20,60 @@ const LoginForm = () => {
   });
 
   const [error, setError] = useState(false); // State for error snackbar
-  const { login } = useContext(AuthContext);
+  const { login, setProfileImage, auth, setUserFullName } =
+    useContext(AuthContext);
   const navigate = useNavigate();
+
+  const authHeader = useMemo(
+    () => ({
+      headers: {
+        Authorization: `Basic ${btoa(auth?.username + ":" + auth?.password)}`,
+      },
+      withCredentials: true,
+    }),
+    [auth?.username, auth?.password]
+  );
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const coverResponse = await fetch(
+          `http://localhost:8080/api/users/profile-image`,
+          authHeader
+        );
+        if (!coverResponse.ok) throw new Error("Failed to fetch profile image");
+        setProfileImage(URL.createObjectURL(await coverResponse.blob()));
+      } catch (err) {
+        console.error("Could not load the profile image.");
+      }
+    };
+
+    const fetchUserMetaDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/users/details`,
+          authHeader
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user details");
+        }
+
+        const data = await response.json(); // Parse response body as JSON
+        console.log("Response data:", data);
+
+        setUserFullName(data.fullName); // Assuming fullName exists in the response
+      } catch (err) {
+        console.error("Could not load the user details.", err);
+      }
+    };
+
+    if (auth?.username) {
+      fetchProfileImage();
+      fetchUserMetaDetails();
+      navigate("/home");
+    }
+  }, [auth]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -45,7 +97,6 @@ const LoginForm = () => {
       .then((response) => {
         console.log("Login successful:", response.data);
         login(credentials.username, credentials.password, response.data);
-        navigate("/home");
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {

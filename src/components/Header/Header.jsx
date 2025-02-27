@@ -6,19 +6,25 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Input,
-  Button,
-  Box,
+  Avatar,
 } from "@mui/material";
 import { AccountCircle, CloudUpload, Logout } from "@mui/icons-material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 import UploadMusicModal from "./UploadMusicModal";
+import CustomDrawer from "../CustomDrawer/CustomDrawer";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [show, setShow] = useState(false);
-  const { logout, auth } = useContext(AuthContext);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
+  };
+
+  const { logout, auth, userProfileImage } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleMouseEnter = (event) => {
@@ -38,22 +44,34 @@ const Header = () => {
   return (
     <AppBar position="static">
       <Toolbar>
+        {/* Updated MenuIcon to toggle the Drawer */}
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          sx={{ mr: 2 }}
+          onClick={toggleDrawer(true)} // Added onClick event
+        >
+          <MenuIcon />
+        </IconButton>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Soundly
         </Typography>
         {auth?.username && (
           <>
-            <IconButton
-              color="inherit"
-              onMouseEnter={handleMouseEnter} // Open menu on hover
-            >
-              <AccountCircle />
+            <IconButton color="inherit" onMouseEnter={handleMouseEnter}>
+              {userProfileImage ? (
+                <Avatar alt="Profile" src={userProfileImage} />
+              ) : (
+                <AccountCircle fontSize="large" />
+              )}
             </IconButton>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleClose}
-              MenuListProps={{ onMouseLeave: handleClose }} // Close on mouse leave
+              MenuListProps={{ onMouseLeave: handleClose }}
             >
               <MenuItem onClick={() => setShow(true)}>
                 <CloudUpload /> &nbsp; Upload
@@ -66,6 +84,7 @@ const Header = () => {
         )}
       </Toolbar>
       <UploadMusicModal show={show} setShow={setShow} />
+      <CustomDrawer open={drawerOpen} toggleDrawer={toggleDrawer} />
     </AppBar>
   );
 };
