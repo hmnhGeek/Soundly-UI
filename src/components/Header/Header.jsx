@@ -42,7 +42,12 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      elevation={0}
+      sx={{ borderBottom: "1px solid #ddd" }}
+      color="transparent"
+      position="static"
+    >
       <Toolbar>
         {/* Updated MenuIcon to toggle the Drawer */}
         <IconButton
