@@ -42,19 +42,26 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      elevation={0}
+      sx={{ borderBottom: "1px solid #ddd" }}
+      color="transparent"
+      position="static"
+    >
       <Toolbar>
         {/* Updated MenuIcon to toggle the Drawer */}
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-          onClick={toggleDrawer(true)} // Added onClick event
-        >
-          <MenuIcon />
-        </IconButton>
+        {auth?.username && (
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={toggleDrawer(true)} // Added onClick event
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Soundly
         </Typography>

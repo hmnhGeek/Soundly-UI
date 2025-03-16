@@ -85,7 +85,7 @@ const Home = () => {
       {/* Left side: Song List */}
       <Box sx={{ flex: 1, width: currentSong ? "50%" : "100%" }}>
         <TextField
-          label="Search Songs"
+          label="What do you want to play?"
           variant="outlined"
           fullWidth
           sx={{ mb: 2 }}
@@ -107,16 +107,12 @@ const Home = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell></TableCell>
-                <TableCell>
-                  <strong>Song</strong>
+                <TableCell sx={{ width: "5%" }}></TableCell>
+                <TableCell sx={{ width: "85%" }}>
+                  <strong>Title</strong>
                 </TableCell>
-                <TableCell>
-                  <strong>Change Cover</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Delete</strong>
-                </TableCell>
+                <TableCell sx={{ width: "5%" }}></TableCell>
+                <TableCell sx={{ width: "5%" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
