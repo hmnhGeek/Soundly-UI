@@ -24,9 +24,11 @@ import Image from "@mui/icons-material/Image";
 import { useLocation, useNavigate } from "react-router-dom";
 import EditCoverImageModal from "../../components/Home/EditCoverImageModal";
 import axios from "axios";
+import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 
 const PlaylistSongs = () => {
   const { auth } = useContext(AuthContext);
+  const { playlists, setPlaylists } = useContext(PlaylistsContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [songs, setSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
@@ -43,10 +45,41 @@ const PlaylistSongs = () => {
   const location = useLocation();
   const playlistId = location.state?.id;
 
+  const fetchCoverImage = async (id) => {
+    try {
+      const coverResponse = await fetch(
+        `http://localhost:8080/api/playlists/cover-image/${id}`,
+        {
+          headers: {
+            Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (!coverResponse.ok) throw new Error("Failed to fetch cover image");
+
+      const blob = await coverResponse.blob();
+      const imageUrl = URL.createObjectURL(blob);
+
+      setPlaylists((prevPlaylists) =>
+        prevPlaylists.map((p) =>
+          p.id === id ? { ...p, coverImage: imageUrl } : p
+        )
+      );
+    } catch (err) {
+      console.error("Could not load the cover image.", err);
+    }
+  };
+
   useEffect(() => {
     if (auth?.username === undefined || !playlistId) {
       navigate("/");
     } else if (playlistId) {
+      let playlist = playlists.filter((x) => x.id === playlistId)?.[0];
+      if (!playlist.coverImage) {
+        fetchCoverImage(playlistId);
+      }
       const URL = `http://localhost:8080/api/playlists/songs/${playlistId}`;
 
       axios
@@ -98,121 +131,148 @@ const PlaylistSongs = () => {
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 1200,
-        margin: "auto",
-        mt: 5,
-        display: "flex", // Arrange elements side-by-side
-        gap: 2, // Adds spacing between song list and player
-      }}
-    >
-      {/* Left side: Song List */}
-      <Box sx={{ flex: 1, width: currentSong ? "50%" : "100%" }}>
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => navigate("/playlists")}
+    <>
+      <Box
+        sx={{
+          maxWidth: 1200,
+          margin: "auto",
+          mt: 5,
+          display: "flex", // Arrange elements side-by-side
+          //   gap: 2, // Adds spacing between song list and player
+        }}
+      >
+        <Box sx={{ flex: 1, width: "100%" }}>
+          <img
+            src={playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage}
+            alt="Cover"
+            width="20%"
+            height="auto"
+            style={{ borderRadius: 8 }}
+          />{" "}
+        </Box>
+
+        {/* <Box sx={{ flex: 1, width: "90%" }}>
+          <Typography variant="h4" sx={{ marginTop: "30%" }}>
+            {playlists.filter((x) => x.id === playlistId)?.[0]?.title}
+          </Typography>
+        </Box> */}
+      </Box>
+      <Box
+        sx={{
+          maxWidth: 1200,
+          margin: "auto",
+          mt: 5,
+          display: "flex", // Arrange elements side-by-side
+          gap: 2, // Adds spacing between song list and player
+        }}
+      >
+        {/* Left side: Song List */}
+        <Box sx={{ flex: 1, width: currentSong ? "50%" : "100%" }}>
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              underline="hover"
+              color="inherit"
+              onClick={() => navigate("/playlists")}
+            >
+              Playlists
+            </Link>
+            <Typography sx={{ color: "text.primary" }}>Songs</Typography>
+          </Breadcrumbs>
+          <br />
+          <TextField
+            label="What do you want to play?"
+            variant="outlined"
+            fullWidth
+            sx={{ mb: 2 }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: 2,
+              boxShadow: 3,
+              maxHeight: 600,
+              overflowY: "auto",
+              scrollbarWidth: "none", // Firefox
+              "&::-webkit-scrollbar": { display: "none" }, // Chrome, Safari, Edge
+            }}
           >
-            Playlists
-          </Link>
-          <Typography sx={{ color: "text.primary" }}>Songs</Typography>
-        </Breadcrumbs>
-        <br />
-        <TextField
-          label="What do you want to play?"
-          variant="outlined"
-          fullWidth
-          sx={{ mb: 2 }}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: "5%" }}></TableCell>
+                  <TableCell sx={{ width: "85%" }}>
+                    <strong>Title</strong>
+                  </TableCell>
+                  <TableCell sx={{ width: "5%" }}></TableCell>
+                  <TableCell sx={{ width: "5%" }}></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredSongs.map((song) => (
+                  <TableRow key={song.id}>
+                    <TableCell>
+                      <IconButton
+                        color="primary"
+                        onClick={() => handlePlayPause(song)}
+                      >
+                        {currentSong?.id === song.id && isPlaying ? (
+                          <PauseIcon />
+                        ) : (
+                          <PlayArrowIcon />
+                        )}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{song.originalName}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="secondary"
+                        onClick={() => initiateCoverImageChange(song.id)}
+                      >
+                        <Image />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="warning"
+                        onClick={() => initiateDelete(song)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+
+        {/* Right side: Song Player (only visible when a song is selected) */}
+        {currentSong && (
+          <Box sx={{ flex: 1, width: "50%" }}>
+            <SongPlayer
+              song={currentSong}
+              setSong={setCurrentSong}
+              isPlaying={isPlaying}
+              onMusicEnd={playNextMusic}
+            />
+          </Box>
+        )}
+
+        <DeleteMusicDialog
+          state={deleteDialogState}
+          setter={setDeleteDialogState}
         />
 
-        <TableContainer
-          component={Paper}
-          sx={{
-            borderRadius: 2,
-            boxShadow: 3,
-            maxHeight: 600,
-            overflowY: "auto",
-            scrollbarWidth: "none", // Firefox
-            "&::-webkit-scrollbar": { display: "none" }, // Chrome, Safari, Edge
-          }}
-        >
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ width: "5%" }}></TableCell>
-                <TableCell sx={{ width: "85%" }}>
-                  <strong>Title</strong>
-                </TableCell>
-                <TableCell sx={{ width: "5%" }}></TableCell>
-                <TableCell sx={{ width: "5%" }}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredSongs.map((song) => (
-                <TableRow key={song.id}>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => handlePlayPause(song)}
-                    >
-                      {currentSong?.id === song.id && isPlaying ? (
-                        <PauseIcon />
-                      ) : (
-                        <PlayArrowIcon />
-                      )}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>{song.originalName}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="secondary"
-                      onClick={() => initiateCoverImageChange(song.id)}
-                    >
-                      <Image />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="warning"
-                      onClick={() => initiateDelete(song)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <EditCoverImageModal
+          songId={coverImageModalState.songId}
+          isVisible={coverImageModalState.show}
+          onClose={() => setCoverImageModalState({ show: false, songId: null })}
+        />
       </Box>
-
-      {/* Right side: Song Player (only visible when a song is selected) */}
-      {currentSong && (
-        <Box sx={{ flex: 1, width: "50%" }}>
-          <SongPlayer
-            song={currentSong}
-            setSong={setCurrentSong}
-            isPlaying={isPlaying}
-            onMusicEnd={playNextMusic}
-          />
-        </Box>
-      )}
-
-      <DeleteMusicDialog
-        state={deleteDialogState}
-        setter={setDeleteDialogState}
-      />
-
-      <EditCoverImageModal
-        songId={coverImageModalState.songId}
-        isVisible={coverImageModalState.show}
-        onClose={() => setCoverImageModalState({ show: false, songId: null })}
-      />
-    </Box>
+    </>
   );
 };
 

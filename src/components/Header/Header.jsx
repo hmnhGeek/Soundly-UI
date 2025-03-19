@@ -39,10 +39,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    logout();
-    setPlaylists(null);
-    setAnchorEl(null);
-    navigate("/");
+    window.location.href = "/";
   };
 
   return (
