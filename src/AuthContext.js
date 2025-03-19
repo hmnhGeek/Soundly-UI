@@ -1,4 +1,5 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
+import { PlaylistsContext } from "./contexts/PlaylistsContext";
 
 export const AuthContext = createContext();
 
