@@ -94,7 +94,14 @@ const Playlists = (props) => {
               </TableHead>
               <TableBody>
                 {playlists?.map((playlist) => (
-                  <TableRow key={playlist.id}>
+                  <TableRow
+                    onClick={() =>
+                      navigate("/playlist-songs", {
+                        state: { id: playlist.id },
+                      })
+                    }
+                    key={playlist.id}
+                  >
                     <TableCell>{playlist.title}</TableCell>
                     <TableCell>{playlist.description}</TableCell>
                   </TableRow>

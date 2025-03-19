@@ -11,7 +11,7 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { AuthContext } from "../../AuthContext";
 import { Avatar, Typography } from "@mui/material";
-import { AccountCircle, Favorite } from "@mui/icons-material";
+import { AccountCircle, Favorite, Home } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 export default function CustomDrawer({ open, toggleDrawer }) {
@@ -43,12 +43,12 @@ export default function CustomDrawer({ open, toggleDrawer }) {
       </List>
       <Divider />
       <List>
-        <ListItem key={"Favourites"} disablePadding>
+        <ListItem onClick={() => navigate("/")} key={"Home"} disablePadding>
           <ListItemButton>
             <ListItemIcon>
-              <Favorite />
+              <Home />
             </ListItemIcon>
-            <ListItemText primary={"Favourites"} />
+            <ListItemText primary={"Home"} />
           </ListItemButton>
         </ListItem>
         <ListItem
