@@ -15,16 +15,18 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
-import { Delete } from "@mui/icons-material";
+import { Delete, OpenInBrowser } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
 import Image from "@mui/icons-material/Image";
 import EditCoverImageModal from "./EditCoverImageModal";
 import { useNavigate } from "react-router-dom";
+import SongPlayerV2 from "../SongPlayer/SongPlayerV2";
 
 const Home = () => {
   const { songs, auth } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentSong, setCurrentSong] = useState(null);
+  const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [deleteDialogState, setDeleteDialogState] = useState({
     show: false,
@@ -55,6 +57,7 @@ const Home = () => {
       setCurrentSong(song);
       setIsPlaying(true); // Play new song
     }
+    setShowPlayer(true);
   };
 
   /**
@@ -83,7 +86,7 @@ const Home = () => {
       }}
     >
       {/* Left side: Song List */}
-      <Box sx={{ flex: 1, width: currentSong ? "50%" : "100%" }}>
+      <Box sx={{ flex: 1, width: "100%" }}>
         <TextField
           label="What do you want to play?"
           variant="outlined"
@@ -122,6 +125,7 @@ const Home = () => {
                     <IconButton
                       color="primary"
                       onClick={() => handlePlayPause(song)}
+                      disabled={currentSong?.id === song.id && isPlaying}
                     >
                       {currentSong?.id === song.id && isPlaying ? (
                         <PauseIcon />
@@ -130,7 +134,15 @@ const Home = () => {
                       )}
                     </IconButton>
                   </TableCell>
-                  <TableCell>{song.originalName}</TableCell>
+                  <TableCell>
+                    {song.originalName} &nbsp;
+                    {currentSong?.id === song.id && isPlaying && (
+                      <OpenInBrowser
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setShowPlayer(true)}
+                      />
+                    )}
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       color="secondary"
@@ -156,14 +168,18 @@ const Home = () => {
 
       {/* Right side: Song Player (only visible when a song is selected) */}
       {currentSong && (
-        <Box sx={{ flex: 1, width: "50%" }}>
-          <SongPlayer
-            song={currentSong}
-            setSong={setCurrentSong}
-            isPlaying={isPlaying}
-            onMusicEnd={playNextMusic}
-          />
-        </Box>
+        <SongPlayerV2
+          song={currentSong}
+          setSong={setCurrentSong}
+          isPlaying={isPlaying}
+          onMusicEnd={playNextMusic}
+          onClose={() => {
+            setIsPlaying(false);
+            setCurrentSong(null);
+          }}
+          showPlayer={showPlayer}
+          setShowPlayer={setShowPlayer}
+        />
       )}
 
       <DeleteMusicDialog
