@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  keyframes,
 } from "@mui/material";
 import { PlayArrow, Pause, Close, Minimize } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
@@ -33,6 +34,14 @@ const SongPlayerV2 = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef(null);
+
+  const wobbleInflateDeflate = keyframes`
+  0% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  50% { transform: scale(1.1); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+`;
 
   useEffect(() => {
     if (audioRef.current && audioSrc) {
@@ -259,6 +268,7 @@ const SongPlayerV2 = ({
               alignItems: "center",
               p: 1,
               zIndex: 1200,
+              animation: `${wobbleInflateDeflate} 1s infinite ease-in-out`, // Inflation-deflation wobble effect
             }}
           >
             <CardMedia
