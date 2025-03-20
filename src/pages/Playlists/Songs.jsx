@@ -229,15 +229,7 @@ const PlaylistSongs = () => {
                         )}
                       </IconButton>
                     </TableCell>
-                    <TableCell>
-                      {song.originalName}&nbsp;
-                      {currentSong?.id === song.id && isPlaying && (
-                        <OpenInBrowser
-                          sx={{ cursor: "pointer" }}
-                          onClick={() => setShowPlayer(true)}
-                        />
-                      )}
-                    </TableCell>
+                    <TableCell>{song.originalName}</TableCell>
                     <TableCell>
                       <IconButton
                         color="secondary"
