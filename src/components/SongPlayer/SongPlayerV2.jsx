@@ -7,6 +7,9 @@ import {
   Skeleton,
   Paper,
   Modal,
+  Card,
+  CardContent,
+  CardMedia,
 } from "@mui/material";
 import { PlayArrow, Pause, Close, Minimize } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
@@ -151,93 +154,127 @@ const SongPlayerV2 = ({
   };
 
   const handleClose = (event, reason) => {
-    if (reason === "backdropClick") return;
+    if (reason === "backdropClick") {
+      setShowPlayer(false);
+      return;
+    }
     onClose();
   };
 
   return (
     <>
-      <Modal
-        open={showPlayer}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <div>
-          <Paper
-            elevation={6}
+      {showPlayer ? (
+        <Modal
+          open={showPlayer}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <div>
+            <Paper
+              elevation={6}
+              sx={{
+                padding: 2,
+                borderRadius: 3,
+                width: 500,
+                height: 640,
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              {/* Close Button */}
+              <IconButton
+                onClick={() => setSong(null)}
+                sx={{
+                  position: "relative",
+                  float: "right",
+                  top: 0,
+                  right: 0,
+                }}
+              >
+                <Close />
+              </IconButton>
+              <Box>
+                <Typography variant="h6" sx={{ my: 2 }} align="center">
+                  {song?.originalName.length > 35
+                    ? `${song.originalName.substring(0, 35)}...`
+                    : song?.originalName}
+                </Typography>
+                {/* Cover Image with Placeholder */}
+                {coverImage ? (
+                  <img
+                    src={coverImage}
+                    alt="Cover"
+                    width="100%"
+                    height="auto"
+                    style={{ borderRadius: 8 }}
+                  />
+                ) : (
+                  <Skeleton
+                    variant="square"
+                    width="100%"
+                    height={500}
+                    sx={{ borderRadius: 8 }}
+                  />
+                )}
+
+                <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
+                  <IconButton onClick={togglePlayPause} color="primary">
+                    {isPlaying ? <Pause /> : <PlayArrow />}
+                  </IconButton>
+                  <Typography variant="body2">
+                    {formatTime(currentTime)}
+                  </Typography>
+                  <Slider
+                    value={progress}
+                    onChange={(e, newValue) => {
+                      const newTime =
+                        (newValue / 100) * audioRef.current.duration;
+                      audioRef.current.currentTime = newTime;
+                      setProgress(newValue);
+                    }}
+                    sx={{ mx: 2, flexGrow: 1 }}
+                  />
+                  <Typography variant="body2">
+                    {formatTime(duration)}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </div>
+        </Modal>
+      ) : (
+        <>
+          <Box
             sx={{
-              padding: 2,
-              borderRadius: 3,
-              width: 500,
-              height: 640,
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
+              position: "fixed",
+              bottom: 20,
+              right: 20,
+              backgroundColor: "white",
+              borderRadius: "50%",
+              boxShadow: 3,
+              display: "flex",
+              alignItems: "center",
+              p: 1,
+              zIndex: 1200,
             }}
           >
-            {/* Close Button */}
-            <IconButton
-              onClick={() => setSong(null)}
-              sx={{ position: "relative", float: "right", top: 0, right: 0 }}
-            >
-              <Close />
-            </IconButton>
-            <IconButton
-              onClick={() => setShowPlayer(false)}
-              sx={{ position: "relative", float: "right", top: 0, right: 0 }}
-            >
-              <Minimize />
-            </IconButton>
-
-            <Box>
-              <Typography variant="h6" sx={{ my: 2 }} align="center">
-                {song?.originalName.length > 35
-                  ? `${song.originalName.substring(0, 35)}...`
-                  : song?.originalName}
-              </Typography>
-              {/* Cover Image with Placeholder */}
-              {coverImage ? (
-                <img
-                  src={coverImage}
-                  alt="Cover"
-                  width="100%"
-                  height="auto"
-                  style={{ borderRadius: 8 }}
-                />
-              ) : (
-                <Skeleton
-                  variant="square"
-                  width="100%"
-                  height={500}
-                  sx={{ borderRadius: 8 }}
-                />
-              )}
-
-              <Box sx={{ display: "flex", alignItems: "center", my: 2 }}>
-                <IconButton onClick={togglePlayPause} color="primary">
-                  {isPlaying ? <Pause /> : <PlayArrow />}
-                </IconButton>
-                <Typography variant="body2">
-                  {formatTime(currentTime)}
-                </Typography>
-                <Slider
-                  value={progress}
-                  onChange={(e, newValue) => {
-                    const newTime =
-                      (newValue / 100) * audioRef.current.duration;
-                    audioRef.current.currentTime = newTime;
-                    setProgress(newValue);
-                  }}
-                  sx={{ mx: 2, flexGrow: 1 }}
-                />
-                <Typography variant="body2">{formatTime(duration)}</Typography>
-              </Box>
-            </Box>
-          </Paper>
-        </div>
-      </Modal>
+            <CardMedia
+              component="img"
+              sx={{
+                width: 50,
+                height: 50,
+                borderRadius: "50%",
+                cursor: "pointer",
+              }}
+              image={coverImage}
+              onClick={() => setShowPlayer(true)}
+            />
+          </Box>
+        </>
+      )}
       <audio
         ref={audioRef}
         src={audioSrc}
