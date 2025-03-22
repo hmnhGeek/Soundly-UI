@@ -19,7 +19,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SongPlayer from "../../components/SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
-import { Delete, OpenInBrowser } from "@mui/icons-material";
+import { Delete, OpenInBrowser, Remove } from "@mui/icons-material";
 import DeleteMusicDialog from "../../components/Home/DeleteMusicDialog";
 import Image from "@mui/icons-material/Image";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -104,7 +104,7 @@ const PlaylistSongs = () => {
           console.error("Request error:", error);
         });
     }
-  }, [playlistId, showAddSongsModal]);
+  }, [playlistId, refreshToggle]);
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
@@ -135,6 +135,25 @@ const PlaylistSongs = () => {
 
   const initiateCoverImageChange = (id) => {
     setCoverImageModalState({ show: true, songId: id });
+  };
+
+  const removeSongFromPlaylist = async (songId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/playlists/remove-song/${playlistId}/${songId}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setRefreshToggle((x) => !x);
+    } catch (error) {
+      console.error("Error removing song:", error);
+    }
   };
 
   return (
@@ -224,10 +243,9 @@ const PlaylistSongs = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ width: "5%" }}></TableCell>
-                  <TableCell sx={{ width: "85%" }}>
+                  <TableCell sx={{ width: "90%" }}>
                     <strong>Title</strong>
                   </TableCell>
-                  <TableCell sx={{ width: "5%" }}></TableCell>
                   <TableCell sx={{ width: "5%" }}></TableCell>
                 </TableRow>
               </TableHead>
@@ -248,20 +266,13 @@ const PlaylistSongs = () => {
                       </IconButton>
                     </TableCell>
                     <TableCell>{song.originalName}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        color="secondary"
-                        onClick={() => initiateCoverImageChange(song.id)}
-                      >
-                        <Image />
-                      </IconButton>
-                    </TableCell>
+
                     <TableCell>
                       <IconButton
                         color="warning"
-                        onClick={() => initiateDelete(song)}
+                        onClick={() => removeSongFromPlaylist(song.id)}
                       >
-                        <Delete />
+                        <Remove />
                       </IconButton>
                     </TableCell>
                   </TableRow>
