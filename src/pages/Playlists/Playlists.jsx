@@ -145,10 +145,10 @@ const Playlists = (props) => {
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ width: "5%" }}>
+                  <TableCell sx={{ width: "15%" }}>
                     <strong>Title</strong>
                   </TableCell>
-                  <TableCell sx={{ width: "90%" }}>
+                  <TableCell sx={{ width: "80%" }}>
                     <strong>Description</strong>
                   </TableCell>
                   <TableCell sx={{ width: "5%" }}></TableCell>
