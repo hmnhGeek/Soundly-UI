@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 import AddPlaylistModal from "./AddPlaylistModal";
+import { Remove } from "@mui/icons-material";
 
 const Playlists = (props) => {
   const { auth } = useContext(AuthContext);
@@ -78,6 +79,26 @@ const Playlists = (props) => {
       });
   }, [showNewPlaylistModal]);
 
+  const deletePlaylist = async (playlistId) => {
+    const URL = `http://localhost:8080/api/playlists/${playlistId}`;
+
+    try {
+      await axios.delete(URL, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+        },
+        withCredentials: true,
+      });
+
+      // Optionally update state by removing the deleted playlist
+      setPlaylists((playlists) => playlists.filter((p) => p.id !== playlistId));
+    } catch (error) {
+      console.error("Error deleting playlist:", error);
+    }
+  };
+
   if (playlists) {
     return (
       <Box
@@ -127,23 +148,33 @@ const Playlists = (props) => {
                   <TableCell sx={{ width: "5%" }}>
                     <strong>Title</strong>
                   </TableCell>
-                  <TableCell sx={{ width: "95%" }}>
+                  <TableCell sx={{ width: "90%" }}>
                     <strong>Description</strong>
                   </TableCell>
+                  <TableCell sx={{ width: "5%" }}></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {playlists?.map((playlist) => (
-                  <TableRow
-                    onClick={() =>
-                      navigate("/playlist-songs", {
-                        state: { id: playlist.id },
-                      })
-                    }
-                    key={playlist.id}
-                  >
-                    <TableCell>{playlist.title}</TableCell>
+                  <TableRow key={playlist.id}>
+                    <TableCell
+                      onClick={() =>
+                        navigate("/playlist-songs", {
+                          state: { id: playlist.id },
+                        })
+                      }
+                    >
+                      {playlist.title}
+                    </TableCell>
                     <TableCell>{playlist.description}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="warning"
+                        onClick={() => deletePlaylist(playlist.id)}
+                      >
+                        <Remove />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
