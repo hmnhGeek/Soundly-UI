@@ -14,16 +14,13 @@ import {
   Link,
   Typography,
   Button,
+  Skeleton,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-import SongPlayer from "../../components/SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
-import { Delete, OpenInBrowser, Remove } from "@mui/icons-material";
-import DeleteMusicDialog from "../../components/Home/DeleteMusicDialog";
-import Image from "@mui/icons-material/Image";
+import { Remove } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
-import EditCoverImageModal from "../../components/Home/EditCoverImageModal";
 import axios from "axios";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 import SongPlayerV2 from "../../components/SongPlayer/SongPlayerV2";
@@ -39,14 +36,6 @@ const PlaylistSongs = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showAddSongsModal, setShowAddSongsModal] = useState(false);
   const [refreshToggle, setRefreshToggle] = useState(false);
-  const [deleteDialogState, setDeleteDialogState] = useState({
-    show: false,
-    song: null,
-  });
-  const [coverImageModalState, setCoverImageModalState] = useState({
-    show: false,
-    songId: null,
-  });
   const navigate = useNavigate();
   const location = useLocation();
   const playlistId = location.state?.id;
@@ -129,14 +118,6 @@ const PlaylistSongs = () => {
     setCurrentSong(songs[Math.floor(Math.random() * songs.length)]);
   };
 
-  const initiateDelete = (song) => {
-    setDeleteDialogState({ show: true, song });
-  };
-
-  const initiateCoverImageChange = (id) => {
-    setCoverImageModalState({ show: true, songId: id });
-  };
-
   const removeSongFromPlaylist = async (songId) => {
     try {
       const response = await axios.delete(
@@ -174,13 +155,24 @@ const PlaylistSongs = () => {
         }}
       >
         <Box sx={{ flex: 1, width: "100%" }}>
-          <img
-            src={playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage}
-            alt="Cover"
-            width="100%"
-            height="auto"
-            style={{ borderRadius: 8 }}
-          />{" "}
+          {playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage ? (
+            <img
+              src={
+                playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage
+              }
+              alt="Cover"
+              width="100%"
+              height="auto"
+              style={{ borderRadius: 8 }}
+            />
+          ) : (
+            <Skeleton
+              variant="rectangle"
+              width="100%"
+              height="auto"
+              sx={{ borderRadius: 8 }}
+            />
+          )}
         </Box>
 
         {/* <Box sx={{ flex: 1, width: "90%" }}>
@@ -297,17 +289,6 @@ const PlaylistSongs = () => {
             setShowPlayer={setShowPlayer}
           />
         )}
-
-        <DeleteMusicDialog
-          state={deleteDialogState}
-          setter={setDeleteDialogState}
-        />
-
-        <EditCoverImageModal
-          songId={coverImageModalState.songId}
-          isVisible={coverImageModalState.show}
-          onClose={() => setCoverImageModalState({ show: false, songId: null })}
-        />
       </Box>
     </>
   );
