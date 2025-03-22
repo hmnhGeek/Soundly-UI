@@ -137,6 +137,12 @@ const PlaylistSongs = () => {
     }
   };
 
+  const playRandomSong = () => {
+    handlePlayPause(
+      filteredSongs[Math.floor(Math.random() * filteredSongs.length)]
+    );
+  };
+
   return (
     <>
       <AddSongModal
@@ -154,7 +160,7 @@ const PlaylistSongs = () => {
           //   gap: 2, // Adds spacing between song list and player
         }}
       >
-        <Box sx={{ flex: 1, width: "100%" }}>
+        <Box sx={{ flex: 1, width: "100%", position: "relative" }}>
           {playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage ? (
             <img
               src={
@@ -173,8 +179,20 @@ const PlaylistSongs = () => {
               sx={{ borderRadius: 8 }}
             />
           )}
-        </Box>
 
+          <Button
+            variant="contained"
+            // color="primary"
+            sx={{
+              position: "absolute",
+              bottom: 15,
+              right: 10,
+            }}
+            onClick={() => playRandomSong()}
+          >
+            <PlayArrowIcon />
+          </Button>
+        </Box>
         {/* <Box sx={{ flex: 1, width: "90%" }}>
           <Typography variant="h4" sx={{ marginTop: "30%" }}>
             {playlists.filter((x) => x.id === playlistId)?.[0]?.title}
