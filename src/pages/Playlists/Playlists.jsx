@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
+  Button,
   IconButton,
   Paper,
   Table,
@@ -15,11 +16,14 @@ import {
   TextField,
 } from "@mui/material";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
+import AddPlaylistModal from "./AddPlaylistModal";
 
 const Playlists = (props) => {
   const { auth } = useContext(AuthContext);
   const { playlists, setPlaylists } = useContext(PlaylistsContext);
   const navigate = useNavigate();
+
+  const [showNewPlaylistModal, setShowNewPlaylistModal] = useState(false);
 
   useEffect(() => {
     if (auth?.username === undefined) {
@@ -49,6 +53,31 @@ const Playlists = (props) => {
     }
   }, [playlists, auth]);
 
+  useEffect(() => {
+    const URL = "http://localhost:8080/api/playlists";
+
+    axios
+      .get(URL, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        const existingIds = new Set(playlists.map((p) => p.id)); // Assuming each playlist has a unique `id`
+        const newPlaylists = response.data
+          .filter((p) => !existingIds.has(p.id)) // Filter only new playlists
+          .map((p) => ({ ...p, coverImage: null })); // Add default coverImage
+
+        setPlaylists([...playlists, ...newPlaylists]);
+      })
+      .catch((error) => {
+        console.error("Request error:", error);
+      });
+  }, [showNewPlaylistModal]);
+
   if (playlists) {
     return (
       <Box
@@ -60,6 +89,10 @@ const Playlists = (props) => {
           gap: 2, // Adds spacing between song list and player
         }}
       >
+        <AddPlaylistModal
+          isVisible={showNewPlaylistModal}
+          onClose={() => setShowNewPlaylistModal(false)}
+        />
         <Box sx={{ flex: 1 }}>
           <TextField
             label="Search for a playlist"
@@ -69,6 +102,13 @@ const Playlists = (props) => {
             //   value={searchTerm}
             //   onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+          <Button
+            sx={{ float: "right", mb: 2 }}
+            onClick={() => setShowNewPlaylistModal(true)}
+          >
+            New Playlist
+          </Button>
 
           <TableContainer
             component={Paper}
