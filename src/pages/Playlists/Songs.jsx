@@ -13,6 +13,7 @@ import {
   Breadcrumbs,
   Link,
   Typography,
+  Button,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -26,6 +27,7 @@ import EditCoverImageModal from "../../components/Home/EditCoverImageModal";
 import axios from "axios";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 import SongPlayerV2 from "../../components/SongPlayer/SongPlayerV2";
+import AddSongModal from "./AddSongModal";
 
 const PlaylistSongs = () => {
   const { auth } = useContext(AuthContext);
@@ -35,6 +37,8 @@ const PlaylistSongs = () => {
   const [currentSong, setCurrentSong] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showAddSongsModal, setShowAddSongsModal] = useState(false);
+  const [refreshToggle, setRefreshToggle] = useState(false);
   const [deleteDialogState, setDeleteDialogState] = useState({
     show: false,
     song: null,
@@ -100,7 +104,7 @@ const PlaylistSongs = () => {
           console.error("Request error:", error);
         });
     }
-  }, [playlistId]);
+  }, [playlistId, showAddSongsModal]);
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
@@ -135,6 +139,12 @@ const PlaylistSongs = () => {
 
   return (
     <>
+      <AddSongModal
+        open={showAddSongsModal}
+        handleClose={() => setShowAddSongsModal(false)}
+        playlistId={playlistId}
+        refresher={setRefreshToggle}
+      />
       <Box
         sx={{
           maxWidth: 1200,
@@ -148,7 +158,7 @@ const PlaylistSongs = () => {
           <img
             src={playlists.filter((x) => x.id === playlistId)?.[0]?.coverImage}
             alt="Cover"
-            width="20%"
+            width="100%"
             height="auto"
             style={{ borderRadius: 8 }}
           />{" "}
@@ -191,10 +201,18 @@ const PlaylistSongs = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
+          <Button
+            sx={{ float: "right", mb: 2 }}
+            onClick={() => setShowAddSongsModal(true)}
+          >
+            Add Song
+          </Button>
+
           <TableContainer
             component={Paper}
             sx={{
               borderRadius: 2,
+              mb: 5,
               boxShadow: 3,
               maxHeight: 600,
               overflowY: "auto",
