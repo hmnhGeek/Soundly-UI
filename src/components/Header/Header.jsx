@@ -14,6 +14,7 @@ import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 import UploadMusicModal from "./UploadMusicModal";
 import CustomDrawer from "../CustomDrawer/CustomDrawer";
+import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -25,6 +26,8 @@ const Header = () => {
   };
 
   const { logout, auth, userProfileImage } = useContext(AuthContext);
+  const { setPlaylists } = useContext(PlaylistsContext);
+
   const navigate = useNavigate();
 
   const handleMouseEnter = (event) => {
@@ -36,9 +39,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    logout();
-    setAnchorEl(null);
-    navigate("/");
+    window.location.href = "/";
   };
 
   return (

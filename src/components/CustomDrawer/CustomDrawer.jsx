@@ -11,10 +11,12 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { AuthContext } from "../../AuthContext";
 import { Avatar, Typography } from "@mui/material";
-import { AccountCircle, Favorite } from "@mui/icons-material";
+import { AccountCircle, Favorite, Home } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 export default function CustomDrawer({ open, toggleDrawer }) {
   const { userProfileImage, userFullName } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const list = (
     <Box
@@ -41,12 +43,24 @@ export default function CustomDrawer({ open, toggleDrawer }) {
       </List>
       <Divider />
       <List>
-        <ListItem key={"Favourites"} disablePadding>
+        <ListItem onClick={() => navigate("/")} key={"Home"} disablePadding>
+          <ListItemButton>
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText primary={"Home"} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem
+          key={"Playlists"}
+          disablePadding
+          onClick={() => navigate("/playlists")}
+        >
           <ListItemButton>
             <ListItemIcon>
               <Favorite />
             </ListItemIcon>
-            <ListItemText primary={"Favourites"} />
+            <ListItemText primary={"Playlists"} />
           </ListItemButton>
         </ListItem>
       </List>
