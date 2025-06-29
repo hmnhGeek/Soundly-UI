@@ -29,9 +29,8 @@ const preloadImages = (urls) => {
   );
 };
 
-export default function LightBox({ selectedSong, startToggle }) {
+export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
   const { auth } = useContext(AuthContext);
-  const [imageUrls, setImageUrls] = useState([]); // ✅ API-driven
   const [shuffled, setShuffled] = useState([]);
   const [index, setIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +53,7 @@ export default function LightBox({ selectedSong, startToggle }) {
             withCredentials: true,
           }
         );
-        setImageUrls(response.data);
+        handleStart(response.data);
       } catch (error) {
         console.error("Error removing song:", error);
       }
@@ -63,17 +62,13 @@ export default function LightBox({ selectedSong, startToggle }) {
     if (selectedSong?.id) {
       fetchImages(selectedSong.id);
     }
-  }, [selectedSong]);
+  }, [selectedSong, startToggle]);
 
-  useEffect(() => {
-    console.log("first");
-    if (imageUrls.length > 0) {
-      handleStart();
+  const handleStart = async (imageUrls) => {
+    if (imageUrls.length === 0) {
+      setShowPlayer(true);
+      return;
     }
-  }, [startToggle, imageUrls]);
-
-  const handleStart = async () => {
-    if (imageUrls.length === 0) return alert("No images found!");
     await preloadImages(imageUrls);
     const shuffledList = shuffle(imageUrls);
     setShuffled(shuffledList);

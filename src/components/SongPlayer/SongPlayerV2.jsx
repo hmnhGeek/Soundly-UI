@@ -179,10 +179,11 @@ const SongPlayerV2 = ({
 
   return (
     <>
-      {startSlideshow && (
-        <LightBox startToggle={startSlideshow} selectedSong={song} />
-      )}
-
+      <LightBox
+        startToggle={startSlideshow}
+        setShowPlayer={setShowPlayer}
+        selectedSong={song}
+      />
       {showPlayer ? (
         <Modal
           open={showPlayer}
@@ -232,7 +233,7 @@ const SongPlayerV2 = ({
                     style={{ borderRadius: 8 }}
                     onClick={() => {
                       setShowPlayer(false);
-                      setStartSlideshow(true);
+                      setStartSlideshow((prev) => prev + 1);
                     }}
                   />
                 ) : (
