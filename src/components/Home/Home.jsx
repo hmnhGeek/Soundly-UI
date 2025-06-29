@@ -15,12 +15,13 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
-import { Delete, OpenInBrowser } from "@mui/icons-material";
+import { Delete, Edit, OpenInBrowser } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
 import Image from "@mui/icons-material/Image";
 import EditCoverImageModal from "./EditCoverImageModal";
 import { useNavigate } from "react-router-dom";
 import SongPlayerV2 from "../SongPlayer/SongPlayerV2";
+import AddSlideUrlsModal from "./AddSlidesUrlsModal";
 
 const Home = () => {
   const { songs, auth } = useContext(AuthContext);
@@ -33,6 +34,10 @@ const Home = () => {
     song: null,
   });
   const [coverImageModalState, setCoverImageModalState] = useState({
+    show: false,
+    songId: null,
+  });
+  const [addSlideModalState, setAddSlideModalState] = useState({
     show: false,
     songId: null,
   });
@@ -75,6 +80,10 @@ const Home = () => {
     setCoverImageModalState({ show: true, songId: id });
   };
 
+  const initiateAddSlides = (id) => {
+    setAddSlideModalState({ show: true, songId: id });
+  };
+
   return (
     <Box
       sx={{
@@ -111,9 +120,10 @@ const Home = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: "5%" }}></TableCell>
-                <TableCell sx={{ width: "85%" }}>
+                <TableCell sx={{ width: "80%" }}>
                   <strong>Title</strong>
                 </TableCell>
+                <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
               </TableRow>
@@ -138,9 +148,17 @@ const Home = () => {
                   <TableCell>
                     <IconButton
                       color="secondary"
-                      onClick={() => initiateCoverImageChange(song.id)}
+                      onClick={() => initiateAddSlides(song.id)}
                     >
                       <Image />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => initiateCoverImageChange(song.id)}
+                    >
+                      <Edit />
                     </IconButton>
                   </TableCell>
                   <TableCell>
@@ -183,6 +201,12 @@ const Home = () => {
         songId={coverImageModalState.songId}
         isVisible={coverImageModalState.show}
         onClose={() => setCoverImageModalState({ show: false, songId: null })}
+      />
+
+      <AddSlideUrlsModal
+        isVisible={addSlideModalState.show}
+        onClose={() => setAddSlideModalState({ show: false, songId: null })}
+        songId={addSlideModalState?.songId}
       />
     </Box>
   );

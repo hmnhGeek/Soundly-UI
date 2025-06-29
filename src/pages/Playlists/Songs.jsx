@@ -25,7 +25,6 @@ import axios from "axios";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 import SongPlayerV2 from "../../components/SongPlayer/SongPlayerV2";
 import AddSongModal from "./AddSongModal";
-import LightBox from "../../components/LightBox/LightBox";
 
 const PlaylistSongs = () => {
   const { auth } = useContext(AuthContext);
