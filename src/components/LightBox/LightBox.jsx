@@ -14,19 +14,22 @@ const shuffle = (array) => {
   return arr;
 };
 
-// 🧠 Preload all images before starting
 const preloadImages = (urls) => {
+  const validUrls = [];
+
   return Promise.all(
-    urls.map(
-      (url) =>
-        new Promise((resolve, reject) => {
-          const img = new Image();
-          img.src = url;
-          img.onload = resolve;
-          img.onerror = reject;
-        })
-    )
-  );
+    urls.map((url) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+          validUrls.push(url);
+          resolve();
+        };
+        img.onerror = () => resolve(); // Just resolve on error, don't reject
+      });
+    })
+  ).then(() => validUrls);
 };
 
 export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
@@ -65,12 +68,14 @@ export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
   }, [selectedSong, startToggle]);
 
   const handleStart = async (imageUrls) => {
-    if (imageUrls.length === 0) {
+    const validUrls = await preloadImages(imageUrls);
+
+    if (validUrls.length === 0) {
       setShowPlayer(true);
       return;
     }
-    await preloadImages(imageUrls);
-    const shuffledList = shuffle(imageUrls);
+
+    const shuffledList = shuffle(validUrls);
     setShuffled(shuffledList);
     setIsOpen(true);
     setStarted(true);
