@@ -76,6 +76,12 @@ function MUIImageGallery() {
     setTimeout(() => setAnimateIn(true), 10);
   };
 
+  useEffect(() => {
+    if (auth?.username === undefined) {
+      navigate("/");
+    }
+  }, []);
+
   const closeOverlay = () => {
     setAnimateIn(false);
     setTimeout(() => {
@@ -150,7 +156,7 @@ function MUIImageGallery() {
         sx={{
           position: "fixed",
           bottom: 24,
-          right: 24,
+          left: 24,
           zIndex: 1400, // Above overlay
         }}
         onClick={() => initiateAddSlides(songId)}

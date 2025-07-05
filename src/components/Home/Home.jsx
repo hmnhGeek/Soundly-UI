@@ -13,22 +13,18 @@ import {
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
 import { Delete, Edit, PhotoLibrary } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
-import Image from "@mui/icons-material/Image";
 import EditCoverImageModal from "./EditCoverImageModal";
 import { useNavigate } from "react-router-dom";
-import SongPlayerV2 from "../SongPlayer/SongPlayerV2";
-import AddSlideUrlsModal from "./AddSlidesUrlsModal";
+import { SongContext } from "../../contexts/SongContext";
 
 const Home = () => {
   const { songs, auth } = useContext(AuthContext);
+  const { handlePlayPause, currentSong, isPlaying, setSongs } =
+    useContext(SongContext);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentSong, setCurrentSong] = useState(null);
-  const [showPlayer, setShowPlayer] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [deleteDialogState, setDeleteDialogState] = useState({
     show: false,
     song: null,
@@ -44,30 +40,13 @@ const Home = () => {
     if (auth?.username === undefined) {
       navigate("/");
     }
+    setSongs(songs);
   }, []);
 
   // Filter songs based on search term (case-insensitive)
   const filteredSongs = songs.filter((song) =>
     song.originalName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Handle Play/Pause
-  const handlePlayPause = (song) => {
-    if (currentSong?.id === song.id) {
-      setIsPlaying(!isPlaying); // Toggle play/pause
-    } else {
-      setCurrentSong(song);
-      setIsPlaying(true); // Play new song
-    }
-    setShowPlayer(true);
-  };
-
-  /**
-   * Pick a random song to be played next.
-   */
-  const playNextMusic = () => {
-    setCurrentSong(songs[Math.floor(Math.random() * songs.length)]);
-  };
 
   const initiateDelete = (song) => {
     setDeleteDialogState({ show: true, song });
@@ -168,22 +147,6 @@ const Home = () => {
           </Table>
         </TableContainer>
       </Box>
-
-      {/* Right side: Song Player (only visible when a song is selected) */}
-      {currentSong && (
-        <SongPlayerV2
-          song={currentSong}
-          setSong={setCurrentSong}
-          isPlaying={isPlaying}
-          onMusicEnd={playNextMusic}
-          onClose={() => {
-            setIsPlaying(false);
-            setCurrentSong(null);
-          }}
-          showPlayer={showPlayer}
-          setShowPlayer={setShowPlayer}
-        />
-      )}
 
       <DeleteMusicDialog
         state={deleteDialogState}
