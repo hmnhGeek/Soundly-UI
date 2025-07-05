@@ -120,7 +120,11 @@ const Home = () => {
                   <TableCell>
                     <IconButton
                       color="secondary"
-                      onClick={() => navigate(`/gallery/${song.id}`)}
+                      onClick={() =>
+                        navigate(`/gallery`, {
+                          state: { song },
+                        })
+                      }
                     >
                       <PhotoLibrary />
                     </IconButton>

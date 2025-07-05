@@ -70,6 +70,7 @@ const SongPlayerV2 = ({
 
   useEffect(() => {
     if (!song) return;
+    console.log("song", song);
 
     const fetchSong = async () => {
       try {

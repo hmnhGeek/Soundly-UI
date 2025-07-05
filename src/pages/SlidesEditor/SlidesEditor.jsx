@@ -1,14 +1,18 @@
 import { useEffect, useState, useContext, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Box, Fab, ImageList, ImageListItem } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import { Add, AddIcCallOutlined } from "@mui/icons-material";
+import { Add, AddIcCallOutlined, PlayArrow } from "@mui/icons-material";
 import AddSlideUrlsModal from "../../components/Home/AddSlidesUrlsModal";
+import { SongContext } from "../../contexts/SongContext";
 
 function MUIImageGallery() {
-  const { songId } = useParams();
+  const location = useLocation();
+  const song = location.state?.song;
+  const songId = song?.id;
   const { auth } = useContext(AuthContext);
+  const { setCurrentSong } = useContext(SongContext);
   const navigate = useNavigate();
 
   const [images, setImages] = useState([]);
@@ -86,7 +90,7 @@ function MUIImageGallery() {
     setAnimateIn(false);
     setTimeout(() => {
       setExpandedIndex(null);
-      navigate(`/gallery/${songId}`);
+      navigate(`/gallery`);
     }, 300);
   };
 
@@ -157,11 +161,23 @@ function MUIImageGallery() {
           position: "fixed",
           bottom: 24,
           left: 24,
-          zIndex: 1400, // Above overlay
+          zIndex: 100, // Above overlay
         }}
         onClick={() => initiateAddSlides(songId)}
       >
         <Add />
+      </Fab>
+      <Fab
+        color="secondary"
+        sx={{
+          position: "fixed",
+          bottom: 96,
+          left: 24,
+          zIndex: 100, // Above overlay
+        }}
+        onClick={() => setCurrentSong(song)}
+      >
+        <PlayArrow />
       </Fab>
       <AddSlideUrlsModal
         isVisible={addSlideModalState.show}

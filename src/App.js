@@ -23,7 +23,7 @@ const App = () => {
               <Route path="/home" element={<Home />} />
               <Route path="/playlists" element={<Playlists />} />
               <Route path="/playlist-songs" element={<PlaylistSongs />} />
-              <Route path="/gallery/:songId" element={<MUIImageGallery />} />
+              <Route path="/gallery" element={<MUIImageGallery />} />
             </Routes>
 
             {/* ✅ Access context here, AFTER wrapping with providers */}
