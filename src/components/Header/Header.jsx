@@ -87,7 +87,7 @@ const Header = () => {
               MenuListProps={{ onMouseLeave: handleClose }}
             >
               <MenuItem onClick={() => setShow(true)}>
-                <CloudUpload /> &nbsp; Upload
+                <CloudUpload /> &nbsp; Upload Music
               </MenuItem>
               <MenuItem onClick={() => navigate("/gallery_manager")}>
                 <ManageAccounts /> &nbsp; Gallery Manager
