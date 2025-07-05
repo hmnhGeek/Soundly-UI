@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Box, Fab, ImageList, ImageListItem } from "@mui/material";
+import { Box, Fab, ImageList, ImageListItem, IconButton } from "@mui/material";
+import { Add, PlayArrow, Remove } from "@mui/icons-material";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import { Add, PlayArrow } from "@mui/icons-material";
 import AddSlideUrlsModal from "../../components/Home/AddSlidesUrlsModal";
 import { SongContext } from "../../contexts/SongContext";
 
@@ -23,6 +23,26 @@ function MUIImageGallery() {
     show: false,
     songId: null,
   });
+
+  const removeSlide = async (slideId) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/slides/remove-slides/${location.state?.song?.id}`,
+        [slideId],
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+          },
+          withCredentials: true,
+        }
+      );
+      fetchImages();
+    } catch (error) {
+      console.error("Failed to remove slides:", error);
+    }
+  };
 
   const fetchImages = useCallback(async () => {
     try {
@@ -111,7 +131,15 @@ function MUIImageGallery() {
       <Box sx={{ maxWidth: 1200, margin: "auto", mt: 5 }}>
         <ImageList cols={3} gap={8}>
           {filteredImages.map((img, i) => (
-            <ImageListItem key={img.id}>
+            <ImageListItem
+              key={img.id}
+              sx={{
+                position: "relative",
+                "&:hover .remove-icon": {
+                  opacity: 1,
+                },
+              }}
+            >
               <img
                 src={img.url}
                 alt={`img-${i}`}
@@ -120,6 +148,25 @@ function MUIImageGallery() {
                 onClick={() => openOverlay(i)}
                 onError={() => handleImageError(img.id)}
               />
+              <IconButton
+                className="remove-icon"
+                size="small"
+                onClick={() => removeSlide(img.id)}
+                sx={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  backgroundColor: "rgba(0,0,0,0.6)",
+                  color: "white",
+                  opacity: 0,
+                  transition: "opacity 0.3s ease",
+                  "&:hover": {
+                    backgroundColor: "rgba(255,0,0,0.7)",
+                  },
+                }}
+              >
+                <Remove fontSize="small" />
+              </IconButton>
             </ImageListItem>
           ))}
         </ImageList>
