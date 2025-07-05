@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Box, Fab, ImageList, ImageListItem } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import { Add, AddIcCallOutlined, PlayArrow } from "@mui/icons-material";
+import { Add, PlayArrow } from "@mui/icons-material";
 import AddSlideUrlsModal from "../../components/Home/AddSlidesUrlsModal";
 import { SongContext } from "../../contexts/SongContext";
 
@@ -15,7 +15,7 @@ function MUIImageGallery() {
   const { setCurrentSong } = useContext(SongContext);
   const navigate = useNavigate();
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState([]); // now stores [{ id, url }]
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
   const [addSlideModalState, setAddSlideModalState] = useState({
@@ -37,7 +37,11 @@ function MUIImageGallery() {
         }
       );
 
-      const validImages = response.data.filter(Boolean).map((url) => ({ url }));
+      // Store both id and url
+      const validImages = response.data
+        .filter((slide) => slide?.id && slide?.url)
+        .map(({ id, url }) => ({ id, url }));
+
       setImages(validImages);
     } catch (error) {
       console.error("Failed to fetch images:", error);
@@ -107,7 +111,7 @@ function MUIImageGallery() {
       >
         <ImageList cols={3} gap={8}>
           {images.map((img, i) => (
-            <ImageListItem key={i}>
+            <ImageListItem key={img.id}>
               <img
                 src={img.url}
                 alt={`img-${i}`}
@@ -155,30 +159,36 @@ function MUIImageGallery() {
           />
         </div>
       )}
+
+      {/* ➕ Add Slides Button */}
       <Fab
         color="primary"
         sx={{
           position: "fixed",
           bottom: 24,
           left: 24,
-          zIndex: 100, // Above overlay
+          zIndex: 100,
         }}
         onClick={() => initiateAddSlides(songId)}
       >
         <Add />
       </Fab>
+
+      {/* ▶️ Play Button */}
       <Fab
         color="secondary"
         sx={{
           position: "fixed",
           bottom: 96,
           left: 24,
-          zIndex: 100, // Above overlay
+          zIndex: 100,
         }}
         onClick={() => setCurrentSong(song)}
       >
         <PlayArrow />
       </Fab>
+
+      {/* 🔧 Add Slides Modal */}
       <AddSlideUrlsModal
         isVisible={addSlideModalState.show}
         onClose={() => setAddSlideModalState({ show: false, songId: null })}

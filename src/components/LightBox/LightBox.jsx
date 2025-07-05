@@ -57,7 +57,7 @@ export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
             withCredentials: true,
           }
         );
-        handleStart(response.data);
+        handleStart(response.data.map((x) => x.url));
       } catch (error) {
         console.error("Error removing song:", error);
       }
