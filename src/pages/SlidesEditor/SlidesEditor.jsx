@@ -15,7 +15,8 @@ function MUIImageGallery() {
   const { setCurrentSong } = useContext(SongContext);
   const navigate = useNavigate();
 
-  const [images, setImages] = useState([]); // now stores [{ id, url }]
+  const [images, setImages] = useState([]); // [{ id, url }]
+  const [failedImageIds, setFailedImageIds] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
   const [addSlideModalState, setAddSlideModalState] = useState({
@@ -37,12 +38,12 @@ function MUIImageGallery() {
         }
       );
 
-      // Store both id and url
       const validImages = response.data
         .filter((slide) => slide?.id && slide?.url)
         .map(({ id, url }) => ({ id, url }));
 
       setImages(validImages);
+      setFailedImageIds([]); // reset on fresh load
     } catch (error) {
       console.error("Failed to fetch images:", error);
     }
@@ -54,24 +55,31 @@ function MUIImageGallery() {
     }
   }, [songId, fetchImages]);
 
+  const handleImageError = (id) => {
+    setFailedImageIds((prev) => [...prev, id]);
+  };
+
+  const filteredImages = images.filter(
+    (img) => !failedImageIds.includes(img.id)
+  );
+
   const initiateAddSlides = (id) => {
     setAddSlideModalState({ show: true, songId: id });
   };
 
-  // 🔁 ESC / Arrow Key Handler
   const handleKeyDown = useCallback(
     (e) => {
       if (expandedIndex === null) return;
 
-      if (e.key === "Escape") {
-        closeOverlay();
-      } else if (e.key === "ArrowRight") {
-        setExpandedIndex((prev) => (prev + 1) % images.length);
-      } else if (e.key === "ArrowLeft") {
-        setExpandedIndex((prev) => (prev - 1 + images.length) % images.length);
-      }
+      if (e.key === "Escape") closeOverlay();
+      else if (e.key === "ArrowRight")
+        setExpandedIndex((prev) => (prev + 1) % filteredImages.length);
+      else if (e.key === "ArrowLeft")
+        setExpandedIndex(
+          (prev) => (prev - 1 + filteredImages.length) % filteredImages.length
+        );
     },
-    [expandedIndex, images.length]
+    [expandedIndex, filteredImages.length]
   );
 
   useEffect(() => {
@@ -85,9 +93,7 @@ function MUIImageGallery() {
   };
 
   useEffect(() => {
-    if (auth?.username === undefined) {
-      navigate("/");
-    }
+    if (!auth?.username) navigate("/");
   }, []);
 
   const closeOverlay = () => {
@@ -98,19 +104,13 @@ function MUIImageGallery() {
     }, 300);
   };
 
-  const currentImage = images[expandedIndex]?.url;
+  const currentImage = filteredImages[expandedIndex]?.url;
 
   return (
     <>
-      <Box
-        sx={{
-          maxWidth: 1200,
-          margin: "auto",
-          mt: 5,
-        }}
-      >
+      <Box sx={{ maxWidth: 1200, margin: "auto", mt: 5 }}>
         <ImageList cols={3} gap={8}>
-          {images.map((img, i) => (
+          {filteredImages.map((img, i) => (
             <ImageListItem key={img.id}>
               <img
                 src={img.url}
@@ -118,13 +118,13 @@ function MUIImageGallery() {
                 loading="lazy"
                 style={{ cursor: "pointer" }}
                 onClick={() => openOverlay(i)}
+                onError={() => handleImageError(img.id)}
               />
             </ImageListItem>
           ))}
         </ImageList>
       </Box>
 
-      {/* 🖼️ Floating Overlay with Animation and Navigation */}
       {expandedIndex !== null && currentImage && (
         <div
           onClick={closeOverlay}
@@ -160,35 +160,22 @@ function MUIImageGallery() {
         </div>
       )}
 
-      {/* ➕ Add Slides Button */}
       <Fab
         color="primary"
-        sx={{
-          position: "fixed",
-          bottom: 24,
-          left: 24,
-          zIndex: 100,
-        }}
+        sx={{ position: "fixed", bottom: 24, left: 24, zIndex: 100 }}
         onClick={() => initiateAddSlides(songId)}
       >
         <Add />
       </Fab>
 
-      {/* ▶️ Play Button */}
       <Fab
         color="secondary"
-        sx={{
-          position: "fixed",
-          bottom: 96,
-          left: 24,
-          zIndex: 100,
-        }}
+        sx={{ position: "fixed", bottom: 96, left: 24, zIndex: 100 }}
         onClick={() => setCurrentSong(song)}
       >
         <PlayArrow />
       </Fab>
 
-      {/* 🔧 Add Slides Modal */}
       <AddSlideUrlsModal
         isVisible={addSlideModalState.show}
         onClose={() => setAddSlideModalState({ show: false, songId: null })}
