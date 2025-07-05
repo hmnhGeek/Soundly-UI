@@ -3,6 +3,7 @@ import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 import { AuthContext } from "../../AuthContext";
 import axios from "axios";
+import "./LightBox.css";
 
 // 🔁 Shuffle utility
 const shuffle = (array) => {
@@ -99,11 +100,9 @@ export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
   return (
     <Lightbox
       mainSrc={shuffled[index]}
-      nextSrc={shuffled[(index + 1) % shuffled.length]}
-      prevSrc={shuffled[(index + shuffled.length - 1) % shuffled.length]}
-      onCloseRequest={closeSlideshow}
+      enableZoom={false}
+      onCloseRequest={() => closeSlideshow()}
       animationDuration={1000}
-      enableZoom={true}
       reactModalStyle={{
         overlay: { backgroundColor: "black" },
         content: { inset: "0", overflow: "hidden" },

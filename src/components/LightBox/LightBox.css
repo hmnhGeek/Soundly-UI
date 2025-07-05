@@ -1,0 +1,17 @@
+/* Hide zoom in, zoom out, and download buttons */
+.ril__zoomInButton,
+.ril__zoomOutButton,
+.ril__downloadButton {
+  display: none !important;
+}
+
+/* Hide left/right arrows */
+.ril__navButton {
+  display: none !important;
+}
+
+/* Optional: remove toolbar background styling if needed */
+.ril__toolbar {
+  background: transparent !important;
+  box-shadow: none !important;
+}
