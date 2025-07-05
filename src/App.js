@@ -10,6 +10,7 @@ import PlaylistSongs from "./pages/Playlists/Songs";
 import MUIImageGallery from "./pages/SlidesEditor/SlidesEditor";
 import { SongContext, SongProvider } from "./contexts/SongContext";
 import SongPlayerV2 from "./components/SongPlayer/SongPlayerV2";
+import SlidesManager from "./pages/SlidesManager/SlidesManager";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
               <Route path="/playlists" element={<Playlists />} />
               <Route path="/playlist-songs" element={<PlaylistSongs />} />
               <Route path="/gallery" element={<MUIImageGallery />} />
+              <Route path="/gallery_manager" element={<SlidesManager />} />
             </Routes>
 
             {/* ✅ Access context here, AFTER wrapping with providers */}

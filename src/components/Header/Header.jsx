@@ -84,6 +84,9 @@ const Header = () => {
               <MenuItem onClick={() => setShow(true)}>
                 <CloudUpload /> &nbsp; Upload
               </MenuItem>
+              <MenuItem onClick={() => navigate("/gallery_manager")}>
+                <CloudUpload /> &nbsp; Gallery Manager
+              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <Logout /> &nbsp; Logout
               </MenuItem>
