@@ -7,6 +7,7 @@ import Header from "./components/Header/Header";
 import Playlists from "./pages/Playlists/Playlists";
 import { PlaylistsProvider } from "./contexts/PlaylistsContext";
 import PlaylistSongs from "./pages/Playlists/Songs";
+import MUIImageGallery from "./pages/SlidesEditor/SlidesEditor";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/playlists" element={<Playlists />} />
             <Route path="/playlist-songs" element={<PlaylistSongs />} />
+            <Route path="/gallery/:songId" element={<MUIImageGallery />} />
           </Routes>
         </Router>
       </PlaylistsProvider>

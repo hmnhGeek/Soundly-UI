@@ -2,11 +2,13 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Modal, Box, Fade, Button, Typography, TextField } from "@mui/material";
 import { AuthContext } from "../../AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AddSlideUrlsModal = ({ isVisible, onClose, songId }) => {
   const { auth } = useContext(AuthContext);
   const [urlText, setUrlText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     const urls = urlText
@@ -63,6 +65,20 @@ const AddSlideUrlsModal = ({ isVisible, onClose, songId }) => {
             gap: 2,
           }}
         >
+          <Button
+            onClick={() => navigate(`/gallery/${songId}`)}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              textTransform: "none",
+              fontSize: "0.8rem",
+              zIndex: 10,
+            }}
+            size="small"
+          >
+            View Gallery
+          </Button>
           <Typography variant="h6" id="add-slide-modal-title">
             Add Slide URLs
           </Typography>
