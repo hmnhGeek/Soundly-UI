@@ -3,7 +3,7 @@ import axios from "axios";
 import { Modal, Box, Fade, Button, Typography, TextField } from "@mui/material";
 import { AuthContext } from "../../AuthContext";
 
-const AddSlideUrlsModal = ({ isVisible, onClose, songId }) => {
+const AddSlideUrlsModal = ({ isVisible, onClose, songId, callback }) => {
   const { auth } = useContext(AuthContext);
   const [urlText, setUrlText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +30,7 @@ const AddSlideUrlsModal = ({ isVisible, onClose, songId }) => {
       );
       setUrlText("");
       onClose();
+      callback?.();
     } catch (error) {
       console.error("Failed to add slide URLs:", error);
       alert("Failed to submit URLs.");

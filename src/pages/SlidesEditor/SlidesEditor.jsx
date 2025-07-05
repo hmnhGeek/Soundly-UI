@@ -1,8 +1,10 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, ImageList, ImageListItem } from "@mui/material";
+import { Box, Fab, ImageList, ImageListItem } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
+import { Add, AddIcCallOutlined } from "@mui/icons-material";
+import AddSlideUrlsModal from "../../components/Home/AddSlidesUrlsModal";
 
 function MUIImageGallery() {
   const { songId } = useParams();
@@ -12,37 +14,41 @@ function MUIImageGallery() {
   const [images, setImages] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
+  const [addSlideModalState, setAddSlideModalState] = useState({
+    show: false,
+    songId: null,
+  });
+
+  const fetchImages = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/slides/${songId}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      const validImages = response.data.filter(Boolean).map((url) => ({ url }));
+      setImages(validImages);
+    } catch (error) {
+      console.error("Failed to fetch images:", error);
+    }
+  }, [songId, auth]);
 
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/slides/${songId}`,
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `Basic ${btoa(
-                auth.username + ":" + auth.password
-              )}`,
-            },
-            withCredentials: true,
-          }
-        );
-
-        const validImages = response.data
-          .filter(Boolean)
-          .map((url) => ({ url }));
-        setImages(validImages);
-      } catch (error) {
-        console.error("Failed to fetch images:", error);
-      }
-    };
-
     if (songId) {
       fetchImages();
     }
-  }, [songId, auth]);
+  }, [songId, fetchImages]);
+
+  const initiateAddSlides = (id) => {
+    setAddSlideModalState({ show: true, songId: id });
+  };
 
   // 🔁 ESC / Arrow Key Handler
   const handleKeyDown = useCallback(
@@ -139,6 +145,24 @@ function MUIImageGallery() {
           />
         </div>
       )}
+      <Fab
+        color="primary"
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          zIndex: 1400, // Above overlay
+        }}
+        onClick={() => initiateAddSlides(songId)}
+      >
+        <Add />
+      </Fab>
+      <AddSlideUrlsModal
+        isVisible={addSlideModalState.show}
+        onClose={() => setAddSlideModalState({ show: false, songId: null })}
+        songId={addSlideModalState?.songId}
+        callback={fetchImages}
+      />
     </>
   );
 }

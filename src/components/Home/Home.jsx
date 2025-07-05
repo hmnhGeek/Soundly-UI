@@ -37,10 +37,7 @@ const Home = () => {
     show: false,
     songId: null,
   });
-  const [addSlideModalState, setAddSlideModalState] = useState({
-    show: false,
-    songId: null,
-  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,10 +75,6 @@ const Home = () => {
 
   const initiateCoverImageChange = (id) => {
     setCoverImageModalState({ show: true, songId: id });
-  };
-
-  const initiateAddSlides = (id) => {
-    setAddSlideModalState({ show: true, songId: id });
   };
 
   return (
@@ -126,7 +119,6 @@ const Home = () => {
                 <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
-                <TableCell sx={{ width: "5%" }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -152,14 +144,6 @@ const Home = () => {
                       onClick={() => navigate(`/gallery/${song.id}`)}
                     >
                       <PhotoLibrary />
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="secondary"
-                      onClick={() => initiateAddSlides(song.id)}
-                    >
-                      <Image />
                     </IconButton>
                   </TableCell>
                   <TableCell>
@@ -210,12 +194,6 @@ const Home = () => {
         songId={coverImageModalState.songId}
         isVisible={coverImageModalState.show}
         onClose={() => setCoverImageModalState({ show: false, songId: null })}
-      />
-
-      <AddSlideUrlsModal
-        isVisible={addSlideModalState.show}
-        onClose={() => setAddSlideModalState({ show: false, songId: null })}
-        songId={addSlideModalState?.songId}
       />
     </Box>
   );
