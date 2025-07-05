@@ -15,7 +15,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import SongPlayer from "../SongPlayer/SongPlayer";
 import { AuthContext } from "../../AuthContext";
-import { Delete, Edit, OpenInBrowser } from "@mui/icons-material";
+import { Delete, Edit, PhotoLibrary } from "@mui/icons-material";
 import DeleteMusicDialog from "./DeleteMusicDialog";
 import Image from "@mui/icons-material/Image";
 import EditCoverImageModal from "./EditCoverImageModal";
@@ -120,9 +120,10 @@ const Home = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ width: "5%" }}></TableCell>
-                <TableCell sx={{ width: "80%" }}>
+                <TableCell sx={{ width: "75%" }}>
                   <strong>Title</strong>
                 </TableCell>
+                <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
                 <TableCell sx={{ width: "5%" }}></TableCell>
@@ -145,6 +146,14 @@ const Home = () => {
                     </IconButton>
                   </TableCell>
                   <TableCell>{song.originalName}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => navigate(`/gallery/${song.id}`)}
+                    >
+                      <PhotoLibrary />
+                    </IconButton>
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       color="secondary"
