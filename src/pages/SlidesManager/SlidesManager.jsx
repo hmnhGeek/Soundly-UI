@@ -1,10 +1,9 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Fab, ImageList, ImageListItem, IconButton } from "@mui/material";
-import { Add, PlayArrow, Remove } from "@mui/icons-material";
+import { Box, ImageList, ImageListItem, IconButton } from "@mui/material";
+import { Remove } from "@mui/icons-material";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
-import AddSlideUrlsModal from "../../components/Home/AddSlidesUrlsModal";
 
 function SlidesManager() {
   const { auth } = useContext(AuthContext);
@@ -15,25 +14,24 @@ function SlidesManager() {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [animateIn, setAnimateIn] = useState(false);
 
-  //   const removeSlide = async (slideId) => {
-  //     try {
-  //       const response = await axios.post(
-  //         `http://localhost:8080/api/slides/remove-slides/${location.state?.song?.id}`,
-  //         [slideId],
-  //         {
-  //           headers: {
-  //             Accept: "application/json",
-  //             "Content-Type": "application/json",
-  //             Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
-  //           },
-  //           withCredentials: true,
-  //         }
-  //       );
-  //       fetchImages();
-  //     } catch (error) {
-  //       console.error("Failed to remove slides:", error);
-  //     }
-  //   };
+  const deleteSlide = async (slideId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/slides/${slideId}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Basic ${btoa(auth.username + ":" + auth.password)}`,
+          },
+          withCredentials: true,
+        }
+      );
+      fetchImages();
+    } catch (error) {
+      console.error("Failed to remove slides:", error);
+    }
+  };
 
   const fetchImages = useCallback(async () => {
     try {
@@ -133,7 +131,7 @@ function SlidesManager() {
               <IconButton
                 className="remove-icon"
                 size="small"
-                // onClick={() => removeSlide(img.id)}
+                onClick={() => deleteSlide(img.id)}
                 sx={{
                   position: "absolute",
                   top: 4,
