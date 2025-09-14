@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { PlayArrow, Pause, Close, Minimize } from "@mui/icons-material";
 import { AuthContext } from "../../AuthContext";
+import LightBox from "../LightBox/LightBox";
 
 const SongPlayerV2 = ({
   song,
@@ -27,6 +28,7 @@ const SongPlayerV2 = ({
   const username = auth?.username;
   const password = auth?.password;
   const [audioSrc, setAudioSrc] = useState(null);
+  const [startSlideshow, setStartSlideshow] = useState(0);
   const [error, setError] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -68,6 +70,7 @@ const SongPlayerV2 = ({
 
   useEffect(() => {
     if (!song) return;
+    console.log("song", song);
 
     const fetchSong = async () => {
       try {
@@ -172,6 +175,11 @@ const SongPlayerV2 = ({
 
   return (
     <>
+      <LightBox
+        startToggle={startSlideshow}
+        setShowPlayer={setShowPlayer}
+        selectedSong={song}
+      />
       {showPlayer ? (
         <Modal
           open={showPlayer}
@@ -219,6 +227,10 @@ const SongPlayerV2 = ({
                     width="100%"
                     height="auto"
                     style={{ borderRadius: 8 }}
+                    onClick={() => {
+                      setShowPlayer(false);
+                      setStartSlideshow((prev) => prev + 1);
+                    }}
                   />
                 ) : (
                   <Skeleton

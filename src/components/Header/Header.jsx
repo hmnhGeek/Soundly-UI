@@ -8,7 +8,12 @@ import {
   MenuItem,
   Avatar,
 } from "@mui/material";
-import { AccountCircle, CloudUpload, Logout } from "@mui/icons-material";
+import {
+  AccountCircle,
+  CloudUpload,
+  Logout,
+  ManageAccounts,
+} from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { AuthContext } from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -82,7 +87,10 @@ const Header = () => {
               MenuListProps={{ onMouseLeave: handleClose }}
             >
               <MenuItem onClick={() => setShow(true)}>
-                <CloudUpload /> &nbsp; Upload
+                <CloudUpload /> &nbsp; Upload Music
+              </MenuItem>
+              <MenuItem onClick={() => navigate("/gallery_manager")}>
+                <ManageAccounts /> &nbsp; Gallery Manager
               </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <Logout /> &nbsp; Logout

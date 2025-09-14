@@ -25,15 +25,14 @@ import axios from "axios";
 import { PlaylistsContext } from "../../contexts/PlaylistsContext";
 import SongPlayerV2 from "../../components/SongPlayer/SongPlayerV2";
 import AddSongModal from "./AddSongModal";
+import { SongContext } from "../../contexts/SongContext";
 
 const PlaylistSongs = () => {
   const { auth } = useContext(AuthContext);
+  const { handlePlayPause, isPlaying, currentSong, songs, setSongs } =
+    useContext(SongContext);
   const { playlists, setPlaylists } = useContext(PlaylistsContext);
   const [searchTerm, setSearchTerm] = useState("");
-  const [songs, setSongs] = useState([]);
-  const [currentSong, setCurrentSong] = useState(null);
-  const [showPlayer, setShowPlayer] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [showAddSongsModal, setShowAddSongsModal] = useState(false);
   const [refreshToggle, setRefreshToggle] = useState(false);
   const navigate = useNavigate();
@@ -99,24 +98,6 @@ const PlaylistSongs = () => {
   const filteredSongs = songs.filter((song) =>
     song.originalName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Handle Play/Pause
-  const handlePlayPause = (song) => {
-    if (currentSong?.id === song.id) {
-      setIsPlaying(!isPlaying); // Toggle play/pause
-    } else {
-      setCurrentSong(song);
-      setIsPlaying(true); // Play new song
-    }
-    setShowPlayer(true);
-  };
-
-  /**
-   * Pick a random song to be played next.
-   */
-  const playNextMusic = () => {
-    setCurrentSong(songs[Math.floor(Math.random() * songs.length)]);
-  };
 
   const removeSongFromPlaylist = async (songId) => {
     try {
@@ -291,22 +272,6 @@ const PlaylistSongs = () => {
             </Table>
           </TableContainer>
         </Box>
-
-        {/* Right side: Song Player (only visible when a song is selected) */}
-        {currentSong && (
-          <SongPlayerV2
-            song={currentSong}
-            setSong={setCurrentSong}
-            isPlaying={isPlaying}
-            onMusicEnd={playNextMusic}
-            onClose={() => {
-              setIsPlaying(false);
-              setCurrentSong(null);
-            }}
-            showPlayer={showPlayer}
-            setShowPlayer={setShowPlayer}
-          />
-        )}
       </Box>
     </>
   );
