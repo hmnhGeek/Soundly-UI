@@ -116,11 +116,6 @@ const SongPlayerV2 = ({
   }, [song, authHeader]);
 
   useEffect(() => {
-    setShowPlayer(false);
-    setStartSlideshow((prev) => prev + 1);
-  }, [song]);
-
-  useEffect(() => {
     if (audioSrc && audioRef.current) {
       audioRef.current
         .play()

@@ -63,7 +63,7 @@ export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
       }
     };
 
-    if (selectedSong?.id) {
+    if (selectedSong?.id && startToggle > 0) {
       fetchImages(selectedSong.id);
     }
   }, [selectedSong, startToggle]);
@@ -94,6 +94,7 @@ export default function LightBox({ selectedSong, startToggle, setShowPlayer }) {
   const closeSlideshow = () => {
     setIsOpen(false);
     setStarted(false);
+    setShowPlayer(true);
   };
 
   if (shuffled.length === 0 || !started) return null;
